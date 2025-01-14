@@ -1,0 +1,193 @@
+// Função para alternar entre as seções
+function showSection(sectionId) {
+  const sections = document.querySelectorAll('.section');
+  sections.forEach(section => section.style.display = 'none');
+  document.getElementById(sectionId).style.display = 'block';
+}
+
+// Carregar dados do localStorage
+let consultas = JSON.parse(localStorage.getItem('consultas')) || [];
+let pacientes = JSON.parse(localStorage.getItem('pacientes')) || [];
+let despesas = JSON.parse(localStorage.getItem('despesas')) || [];
+
+// Atualizar tabelas ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+  atualizarTabelaConsultas();
+  atualizarTabelaPacientes();
+  atualizarTabelaDespesas();
+});
+
+// Cadastro de Consultas
+document.getElementById('form-consulta').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const consulta = {
+    data: document.getElementById('data-consulta').value,
+    paciente: document.getElementById('nome-paciente').value,
+    idade: document.getElementById('idade').value,
+    responsavel: document.getElementById('responsavel').value,
+    telefone: document.getElementById('telefone').value,
+    especialidade: document.getElementById('especialidade').value,
+    consultorio: document.getElementById('consultorio').value,
+    especialista: document.getElementById('especialista').value
+  };
+  consultas.push(consulta);
+  localStorage.setItem('consultas', JSON.stringify(consultas));
+  atualizarTabelaConsultas();
+  this.reset();
+});
+
+// Funções para atualizar tabelas
+function atualizarTabelaConsultas() {
+  const tbody = document.querySelector('#tabela-consultas tbody');
+  tbody.innerHTML = '';
+  consultas.forEach((consulta, index) => {
+    const row = `<tr>
+      <td>${consulta.data}</td>
+      <td>${consulta.paciente}</td>
+      <td>${consulta.idade}</td>
+      <td>${consulta.responsavel}</td>
+      <td>${consulta.telefone}</td>
+      <td>${consulta.especialidade}</td>
+      <td>${consulta.consultorio}</td>
+      <td>${consulta.especialista}</td>
+      <td>
+        <button onclick="editarConsulta(${index})">Editar</button>
+        <button onclick="excluirConsulta(${index})">Excluir</button>
+      </td>
+    </tr>`;
+    tbody.innerHTML += row;
+  });
+}
+
+// Funções para editar e excluir consultas
+function editarConsulta(index) {
+  const consulta = consultas[index];
+  document.getElementById('data-consulta').value = consulta.data;
+  document.getElementById('nome-paciente').value = consulta.paciente;
+  document.getElementById('idade').value = consulta.idade;
+  document.getElementById('responsavel').value = consulta.responsavel;
+  document.getElementById('telefone').value = consulta.telefone;
+  document.getElementById('especialidade').value = consulta.especialidade;
+  document.getElementById('consultorio').value = consulta.consultorio;
+  document.getElementById('especialista').value = consulta.especialista;
+  consultas.splice(index, 1);
+  localStorage.setItem('consultas', JSON.stringify(consultas));
+  atualizarTabelaConsultas();
+}
+
+function excluirConsulta(index) {
+  consultas.splice(index, 1);
+  localStorage.setItem('consultas', JSON.stringify(consultas));
+  atualizarTabelaConsultas();
+}
+
+// Modal de Pacientes
+function abrirModalPaciente() {
+  document.getElementById('modal-paciente').style.display = 'flex';
+}
+
+function fecharModalPaciente() {
+  document.getElementById('modal-paciente').style.display = 'none';
+}
+
+document.getElementById('form-paciente').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const paciente = {
+    nome: document.getElementById('nome-paciente-modal').value,
+    idade: document.getElementById('idade-paciente-modal').value,
+    responsavel: document.getElementById('responsavel-paciente-modal').value,
+    telefone: document.getElementById('telefone-paciente-modal').value
+  };
+  pacientes.push(paciente);
+  localStorage.setItem('pacientes', JSON.stringify(pacientes));
+  atualizarTabelaPacientes();
+  this.reset();
+  fecharModalPaciente();
+});
+
+function atualizarTabelaPacientes() {
+  const tbody = document.querySelector('#tabela-pacientes tbody');
+  tbody.innerHTML = '';
+  pacientes.forEach((paciente, index) => {
+    const row = `<tr>
+      <td>${paciente.nome}</td>
+      <td>${paciente.idade}</td>
+      <td>${paciente.responsavel}</td>
+      <td>${paciente.telefone}</td>
+      <td>
+        <button onclick="editarPaciente(${index})">Editar</button>
+        <button onclick="excluirPaciente(${index})">Excluir</button>
+      </td>
+    </tr>`;
+    tbody.innerHTML += row;
+  });
+}
+
+// Funções para editar e excluir pacientes
+function editarPaciente(index) {
+  const paciente = pacientes[index];
+  document.getElementById('nome-paciente-modal').value = paciente.nome;
+  document.getElementById('idade-paciente-modal').value = paciente.idade;
+  document.getElementById('responsavel-paciente-modal').value = paciente.responsavel;
+  document.getElementById('telefone-paciente-modal').value = paciente.telefone;
+  pacientes.splice(index, 1);
+  localStorage.setItem('pacientes', JSON.stringify(pacientes));
+  abrirModalPaciente();
+}
+
+function excluirPaciente(index) {
+  pacientes.splice(index, 1);
+  localStorage.setItem('pacientes', JSON.stringify(pacientes));
+  atualizarTabelaPacientes();
+}
+
+// Despesas
+document.getElementById('form-despesa').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const despesa = {
+    data: document.getElementById('data-despesa').value,
+    descricao: document.getElementById('descricao').value,
+    valor: document.getElementById('valor').value,
+    categoria: document.getElementById('categoria').value
+  };
+  despesas.push(despesa);
+  localStorage.setItem('despesas', JSON.stringify(despesas));
+  atualizarTabelaDespesas();
+  this.reset();
+});
+
+function atualizarTabelaDespesas() {
+  const tbody = document.querySelector('#tabela-despesas tbody');
+  tbody.innerHTML = '';
+  despesas.forEach((despesa, index) => {
+    const row = `<tr>
+      <td>${despesa.data}</td>
+      <td>${despesa.descricao}</td>
+      <td>${despesa.valor}</td>
+      <td>${despesa.categoria}</td>
+      <td>
+        <button onclick="editarDespesa(${index})">Editar</button>
+        <button onclick="excluirDespesa(${index})">Excluir</button>
+      </td>
+    </tr>`;
+    tbody.innerHTML += row;
+  });
+}
+
+// Funções para editar e excluir despesas
+function editarDespesa(index) {
+  const despesa = despesas[index];
+  document.getElementById('data-despesa').value = despesa.data;
+  document.getElementById('descricao').value = despesa.descricao;
+  document.getElementById('valor').value = despesa.valor;
+  document.getElementById('categoria').value = despesa.categoria;
+  despesas.splice(index, 1);
+  localStorage.setItem('despesas', JSON.stringify(despesas));
+  atualizarTabelaDespesas();
+}
+
+function excluirDespesa(index) {
+  despesas.splice(index, 1);
+  localStorage.setItem('despesas', JSON.stringify(despesas));
+  atualizarTabelaDespesas();
+}
